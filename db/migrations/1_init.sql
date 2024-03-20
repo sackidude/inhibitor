@@ -1,0 +1,60 @@
+CREATE TABLE user (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  password VARCHAR(255) NOT NULL
+);
+
+CREATE TYPE REGION AS ENUM('EUW', 'EUNE', 'NA', 'kr');
+
+CREATE TABLE account (
+  id SERIAL PRIMARY KEY,
+  in_game_name VARCHAR(16) NOT NULL,
+  region REGION NOT NULL,
+  tag CHAR(4) NOT NULL
+);
+
+CREATE TABLE user_account (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES user(id),
+  account_id INT REFERENCES account(id)
+);
+
+CREATE TYPE SCORELINE AS (
+  champion_id SMALLINT NOT NULL,
+  kills SMALLINT NOT NULL,
+  deaths SMALLINT NOT NULL,
+  assits SMALLINT NOT NULL,
+  cs SMALLINT NOT NULL
+);
+
+CREATE TYPE SIDE AS (
+  top SCORELINE NOT NULL,
+  jungle SCORELINE NOT NULL,
+  mid SCORELINE NOT NULL,
+  bot SCORELINE NOT NULL,
+  support SCORELINE NOT NULL
+);
+
+CREATE TYPE GAME_INFO AS (
+  blue SIDE NOT NULL,
+  red SIDE NOT NULL
+);
+  
+
+CREATE TABLE game (
+  id SERIAL PRIMARY KEY,
+  game_info GAME_INFO NOT NULL,
+  played TIME WITH TIME ZONE NOT NULL
+);
+
+CREATE TYPE GAME_SIDE AS ENUM ('blue', 'red');
+CREATE TYPE GAME_ROLE AS ENUM ('top', 'jungle', 'mid', 'bottom', 'support');
+
+CREATE TABLE note (
+  id SERIAL PRIMARY KEY,
+  note TEXT NULL,
+  author_id INT REFERENCES user(id) NOT NULL,
+  game_id INT REFERENCES game(id) NOT NULL,
+  game_side GAME_SIDE NOT NULL,
+  game_role GAME_ROLE NOT NULL
+);
