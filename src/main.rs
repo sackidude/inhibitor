@@ -1,32 +1,23 @@
-use axum::extract::State;
-use axum::http::StatusCode;
-use axum::routing::get;
-use axum::Router;
-use sqlx::PgPool;
-use std::error::Error;
-use std::time::Duration;
+use database::get_database_pool;
+use routes::get_router;
 
-mod handlers;
+mod database;
+mod error;
+mod routes;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() {
     dotenv::dotenv().ok();
 
-    let database_url = std::env::var("DATABASE_URL")?;
-    let pool = sqlx::postgres::PgPoolOptions::new()
-        .max_connections(5)
-        .acquire_timeout(Duration::from_secs(5))
-        .connect(&database_url)
-        .await?;
+    let database_url =
+        std::env::var("DATABASE_URL").expect(".env variable `DATABASE_URL` couldn't be found.");
+    let pool = get_database_pool(&database_url).await.unwrap();
 
-    sqlx::migrate!("./migrations").run(&pool).await?;
+    sqlx::migrate!("./migrations").run(&pool).await.unwrap();
 
-    let app = Router::new()
-        .route("/", get(handlers::startpage::get))
-        .with_state(pool);
+    let app = get_router(pool);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
 
-    axum::serve(listener, app).await?;
-    Ok(())
+    axum::serve(listener, app).await.unwrap();
 }
