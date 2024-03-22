@@ -8,17 +8,18 @@ use serde::Deserialize;
 use serde_urlencoded;
 use sqlx::PgPool;
 use sqlx::{self, prelude::FromRow};
+use crate::error;
 
-enum LoginResponse {
-    Successfull { username: String },
+enum LoginResponse<'a> {
+    Successfull { username: &'a str },
     WrongPassword,
-    UserNotFound
+    UserNotFound,
 }
 
 #[derive(Template)]
 #[template(path = "logged_in.html")]
-struct LoggedInTemplate {
-    login_state: LoginResponse,
+struct LoggedInTemplate<'a> {
+    login_state: LoginResponse<'a>,
 }
 
 
@@ -33,26 +34,31 @@ struct DatabaseResponse {
     password: String,
 }
 
-pub async fn post(State(pool): State<PgPool>, payload: String) -> impl IntoResponse {
-    let req = serde_urlencoded::from_str::<LoginPayload>(&payload).unwrap();
-    let res = sqlx::query_as::<_, DatabaseResponse>(
+// TODO!: input validation, prevent sql injection.
+pub async fn post(State(pool): State<PgPool>, payload: String) -> error::Result<impl IntoResponse> {
+    let payload = serde_urlencoded::from_str::<LoginPayload>(&payload)
+        .map_err(|_|error::Error::RequestParsingError)?;
+    
+    let res = sqlx::query_as!(
+        DatabaseResponse,
         "SELECT password FROM users WHERE username = ($1) LIMIT 1",
+        payload.username
     )
-    .bind(&req.username)
     .fetch_optional(&pool)
     .await
-    .unwrap();
+    .map_err(|_|error::Error::DatabaseQueryError)?;
+
     let logged_in = match res {
         None => {
             LoggedInTemplate{login_state: LoginResponse::UserNotFound}
         }
         Some(res) => {
-            if res.password == req.password {
-                LoggedInTemplate { login_state: LoginResponse::Successfull { username: req.username }}
+            if res.password == payload.password {
+                LoggedInTemplate { login_state: LoginResponse::Successfull { username: &payload.username }}
             } else {
                 LoggedInTemplate { login_state: LoginResponse::WrongPassword }
             }
         }
     };
-    Html(logged_in.render().unwrap())
+    Ok(Html(logged_in.render().map_err(|_|error::Error::AskamaTemplatingError)?))
 }
