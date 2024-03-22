@@ -1,6 +1,7 @@
 use axum::{routing::get_service, Router};
 use tower_http::services::ServeDir;
 
+pub mod login;
 pub mod startpage;
 
 pub fn routes_static() -> Router {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- HTMX -->
+    <script
+      src="https://unpkg.com/htmx.org@1.9.11"
+      integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="stylesheets/main.css" />
+    <title>Uninhibited</title>
+  </head>
+  <body>
+    <form hx-post="/login" hx-target="body">
+      <label>
+        username
+        <input type="text" name="username" required /><br />
+      </label>
+      <label>
+        password
+        <input type="password" name="password" required /><br />
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>

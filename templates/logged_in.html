@@ -1,0 +1,8 @@
+{% match login_state %}
+{% when LoginResponse::Successfull with { username } %}
+Logged in as: {{ username }}
+{% when LoginResponse::WrongPassword %}
+That's the wrong password
+{% when LoginResponse::UserNotFound %}
+Couldn't find that username.
+{% endmatch %}
