@@ -11,7 +11,7 @@ async fn main() {
 
     let database_url =
         std::env::var("DATABASE_URL").expect(".env variable `DATABASE_URL` couldn't be found.");
-    let pool = get_database_pool(&database_url).await.unwrap();
+    let pool = get_database_pool(&database_url).await;
 
     sqlx::migrate!("./migrations").run(&pool).await.unwrap();
 
