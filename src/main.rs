@@ -1,9 +1,9 @@
 use database::get_database_pool;
-use routes::get_router;
+use web::get_router;
 
 mod database;
 mod error;
-mod routes;
+mod web;
 
 #[tokio::main]
 async fn main() {
