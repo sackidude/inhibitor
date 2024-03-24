@@ -16,7 +16,8 @@ pub fn get_router(pool: Pool<Postgres>) -> Router {
     
     let auth_routes = Router::new()
         .route("/profile", get(h::authorized::profile::get))
-        .route_layer(middleware::from_fn(mw_require_auth));
+        .route_layer(middleware::from_fn(mw_require_auth))
+        .with_state(pool);
 
     Router::new()
         .route("/", get(h::startpage::get))

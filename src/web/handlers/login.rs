@@ -10,8 +10,9 @@ use sqlx::PgPool;
 use sqlx::{self, prelude::FromRow};
 use tower_cookies::cookie::{self, SameSite};
 use tower_cookies::{Cookie, Cookies};
-use crate::error;
-use crate::web::AUTH_TOKEN;
+use crate::{error, web};
+use web::mw_auth::auth_token::AuthToken;
+use crate::web::{ AUTH_TOKEN};
 
 enum LoginResponse<'a> {
     Successfull { username: &'a str },
@@ -34,6 +35,7 @@ struct LoginPayload {
 
 #[derive(FromRow)]
 struct DatabaseResponse {
+    id: i32,
     password: String,
 }
 
@@ -48,7 +50,7 @@ pub async fn post(
     
     let res = sqlx::query_as!(
         DatabaseResponse,
-        "SELECT password FROM users WHERE username = ($1) LIMIT 1",
+        "SELECT id, password FROM users WHERE username = ($1) LIMIT 1",
         payload.username
     )
     .fetch_optional(&pool)
@@ -61,7 +63,16 @@ pub async fn post(
         }
         Some(res) => {
             if res.password == payload.password {
-                let mut cookie = Cookie::new(AUTH_TOKEN, "user-1.exp.sign");
+                let auth_token = AuthToken::new(res.id);
+                let signature = auth_token.get_signature();
+
+                // Update database
+                let _ = sqlx::query!("UPDATE users SET signature=($1) WHERE id=($2)", signature, res.id)
+                    .execute(&pool)
+                    .await
+                    .map_err(|_|error::Error::DatabaseQueryError)?;
+
+                let mut cookie = Cookie::new(AUTH_TOKEN, auth_token.to_str());
                 cookie.set_http_only(true);
                 cookie.set_path("/");
                 cookie.set_same_site(cookie::SameSite::Strict);

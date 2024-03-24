@@ -13,6 +13,10 @@ pub enum Error {
     RequestParsingError,
     DatabaseQueryError,
     AskamaTemplatingError,
+
+    // -- auth errors
+    NoAuthenticationToken,
+    AuthTokenParsingError
 }
 
 impl IntoResponse for Error {
