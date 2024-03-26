@@ -1,11 +1,9 @@
-use axum::{routing::get_service, Router};
-use tower_http::services::ServeDir;
+use axum::routing;
+use tower_http::services;
 
-pub mod login;
-pub mod startpage;
+pub mod public;
+pub mod auth;
 
-pub mod authorized;
-
-pub fn routes_static() -> Router {
-    Router::new().nest_service("/", get_service(ServeDir::new("./static")))
+pub fn static_routes() -> axum::Router {
+    axum::Router::new().nest_service("/", routing::get_service(services::ServeDir::new("./static")))
 }

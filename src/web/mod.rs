@@ -1,29 +1,22 @@
-use axum::{
-    middleware, routing::{get, post}, Router
-};
-use sqlx::{Pool, Postgres};
-use tower_cookies::{CookieManager, CookieManagerLayer};
-
-use crate::web::mw_auth::mw_require_auth;
+use axum::routing;
 
 mod handlers;
-mod mw_auth;
+mod middleware;
 
-pub const AUTH_TOKEN: &str = "auth-token";
+pub fn get_router(pool: &sqlx::Pool<sqlx::Postgres>) -> axum::Router {
+    let public_routes = axum::Router::new()
+        .route("/", routing::get(handlers::public::startpage::get))
+        .route("/login", routing::post(handlers::public::login::post));
 
-pub fn get_router(pool: Pool<Postgres>) -> Router {
-    use handlers as h;
-    
-    let auth_routes = Router::new()
-        .route("/profile", get(h::authorized::profile::get))
-        .route_layer(middleware::from_fn(mw_require_auth))
-        .with_state(pool);
+    let auth_routes = axum::Router::new()
+        .route("/profile", routing::get(handlers::auth::profile::get))
+        .route_layer(axum::middleware::from_fn_with_state(pool.clone(), middleware::require_auth))
+        .layer(tower_cookies::CookieManagerLayer::new());
 
-    Router::new()
-        .route("/", get(h::startpage::get))
-        .route("/login", post(h::login::post))
-        .nest("/authorized", auth_routes)
-        .with_state(pool)
-        .layer(CookieManagerLayer::new())
-        .fallback_service(h::routes_static())
+    axum::Router::new()
+        .route("/", routing::get(handlers::public::startpage::get))
+        .nest("/public", public_routes)
+        .nest("/auth", auth_routes)
+        .with_state(pool.clone())
+        .fallback_service(handlers::static_routes())
 }
