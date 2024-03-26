@@ -7,7 +7,7 @@ use askama::{self, Template};
 struct StartPageTemplate {}
 
 pub async fn get(
-    extract::State(_state): extract::State<sqlx::Pool<sqlx::Postgres>>
+    extract::State(pool): extract::State<sqlx::Pool<sqlx::Postgres>>
 ) -> impl response::IntoResponse {
     let startpage = StartPageTemplate{};
     response::Html(startpage.render().unwrap())
