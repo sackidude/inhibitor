@@ -1,6 +1,6 @@
 use axum::{extract, response};
 
-use crate::{league_api, web::middleware};
+use crate::{api, web::middleware};
 
 struct AccountId {
     id: i32,
@@ -12,7 +12,7 @@ pub async fn post(
     req_body: String,
 ) -> impl response::IntoResponse {
     // Get account
-    let account = league_api::Account::from_form_res(&req_body).await.unwrap();
+    let account = api::Account::from_form_res(&req_body).await.unwrap();
 
     // Parse auth token to get user id
     let token = match middleware::get_auth_token(cookies) {
