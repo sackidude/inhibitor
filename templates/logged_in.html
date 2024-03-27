@@ -1,7 +1,7 @@
 {% match login_state %}
 {% when LoginResponse::Successfull with { username } %}
 Logged in as: {{ username }}
-<button hx-get="auth/profile">View profile</button>
+<button hx-get="auth/profile" hx-target="body">View profile</button>
 {% when LoginResponse::WrongPassword %}
 That's the wrong password
 {% when LoginResponse::UserNotFound %}
