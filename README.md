@@ -1,4 +1,5 @@
 # inhibitor
+
 League journal but an online service
 
 ## Running
@@ -6,4 +7,3 @@ League journal but an online service
 ### Server
 
 `cargo run`
-

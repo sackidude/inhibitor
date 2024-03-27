@@ -13,13 +13,20 @@ pub struct AuthToken {
 
 impl AuthToken {
     pub fn new(user_id: i32) -> Self {
-        const COOKIE_EXPIRATION_TIME_IN_SECONDS: u64 = 60*60; // 1 hour
-        let now_in_secs = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
+        const COOKIE_EXPIRATION_TIME_IN_SECONDS: u64 = 60 * 60; // 1 hour
+        let now_in_secs = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
         let expiration = now_in_secs + COOKIE_EXPIRATION_TIME_IN_SECONDS;
 
         let signature = generate_signature();
 
-        AuthToken { user_id, expiration, signature }
+        AuthToken {
+            user_id,
+            expiration,
+            signature,
+        }
     }
 
     pub fn from_str(token: &str) -> Option<Self> {
@@ -39,9 +46,11 @@ impl AuthToken {
                 let parsed = remove_last_char(expiration).parse::<u64>();
                 match parsed {
                     Ok(a) => a,
-                    Err(_) => {return None;},
+                    Err(_) => {
+                        return None;
+                    }
                 }
-            },
+            }
             None => return None,
         };
         let signature = iter.collect::<Vec<&str>>().join("");
@@ -49,14 +58,17 @@ impl AuthToken {
         Some(AuthToken {
             user_id,
             expiration,
-            signature
+            signature,
         })
     }
 }
 
 impl AuthToken {
     pub fn to_str(&self) -> String {
-        format!("user-{}-{}-{}", self.user_id, self.expiration, self.signature)
+        format!(
+            "user-{}-{}-{}",
+            self.user_id, self.expiration, self.signature
+        )
     }
 
     pub fn get_signature(&self) -> &str {
@@ -68,7 +80,10 @@ impl AuthToken {
     }
 
     pub fn is_expired(&self) -> bool {
-        let now = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
+        let now = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
         self.expiration < now
     }
 }
@@ -88,7 +103,9 @@ fn rem_last_char_test() {
 
 fn generate_signature() -> String {
     let mut rng = rand::thread_rng();
-    (0..20).map(|_| rng.sample(distributions::Alphanumeric) as char).collect()
+    (0..20)
+        .map(|_| rng.sample(distributions::Alphanumeric) as char)
+        .collect()
 }
 
 #[test]

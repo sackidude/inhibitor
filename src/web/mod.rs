@@ -10,7 +10,10 @@ pub fn get_router(pool: &sqlx::Pool<sqlx::Postgres>) -> axum::Router {
 
     let auth_routes = axum::Router::new()
         .route("/profile", routing::get(handlers::auth::profile::get))
-        .route_layer(axum::middleware::from_fn_with_state(pool.clone(), middleware::require_auth));
+        .route_layer(axum::middleware::from_fn_with_state(
+            pool.clone(),
+            middleware::require_auth,
+        ));
 
     axum::Router::new()
         .route("/", routing::get(handlers::public::startpage::get))

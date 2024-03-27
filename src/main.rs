@@ -18,5 +18,5 @@ async fn main() {
         .unwrap();
 
     axum::serve(listener, app).await.unwrap();
-    pool.close().await; // Probably not necessary, but for clarity. 
+    pool.close().await; // Probably not necessary, but for clarity.
 }
