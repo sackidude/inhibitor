@@ -1,6 +1,27 @@
-<h1>
-    <h2>Your username is: {{ username }}</h2>
-    <h2>Your password is: {{ password }}</h2>
-    <p>This is your profile.</p>
-    <button>Track new account</button>
-</h1>
+<h2>{{ username }}</h2>
+<p>This is your profile.</p>
+<form hx-post="/auth/accs">
+  Start tracking new league of legends account
+  <label>
+    username
+    <input type="text" name="username" required /><br />
+  </label>
+  <label>
+    tag
+    <input type="text" name="tag" required /><br />
+  </label>
+  <label>
+    region
+    <input type="text" name="region" required /><br />
+  </label>
+  <button type="submit">Submit</button>
+</form>
+<form hx-get="/auth/accs/games">
+  Fetch games for account
+  <select name="account">
+    {% for account in accounts %}
+        <option value="{{ account }}">{{ account }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Fetch</button>
+</form>
