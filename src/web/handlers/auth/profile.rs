@@ -5,12 +5,16 @@ use axum::{extract, response};
 #[template(path = "profile.html")]
 struct ProfileTemplate<'a> {
     username: &'a str,
-    password: &'a str
+    accounts: Vec<&'a str>,
 }
 
 pub async fn get(
-    extract::State(pool): extract::State<sqlx::Pool<sqlx::Postgres>>
+    extract::State(pool): extract::State<sqlx::Pool<sqlx::Postgres>>,
+    cookies: tower_cookies::Cookies,
 ) -> impl response::IntoResponse {
-    let profile = ProfileTemplate { username: "hello", password: "world" };
+    let profile = ProfileTemplate {
+        username: "hello",
+        accounts: vec!["test1", "test2"],
+    };
     response::Html(profile.render().unwrap())
 }
