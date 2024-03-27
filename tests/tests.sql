@@ -16,3 +16,14 @@ FROM
     INNER JOIN user_account ON account.id = user_account.account_id
 WHERE
     user_account.user_id = 1;
+
+-- @block accounts.rs
+INSERT INTO
+    account (in_game_name, region, tag)
+VALUES
+    ('oscargus', 'EUW' AS REGION, 'poop') RETURNING id;
+
+INSERT INTO
+    user_account (user_id, account_id)
+VALUES
+    (1, 2);
