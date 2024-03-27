@@ -22,6 +22,7 @@ pub async fn post(
 
     let user_id = token.get_user_id();
 
+    // TODO! Verify that the account does not already exist in the database.
     // Push the account to the database
     let account_id = sqlx::query_as_unchecked!(
         AccountId,
