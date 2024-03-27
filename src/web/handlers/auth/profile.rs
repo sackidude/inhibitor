@@ -1,8 +1,5 @@
 use askama::Template;
-use axum::{
-    extract,
-    response::{self, IntoResponse},
-};
+use axum::{extract, response};
 use sqlx::prelude::FromRow;
 
 use crate::web::middleware;
