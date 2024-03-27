@@ -15,12 +15,7 @@ pub async fn require_auth(
     req: http::Request<axum::body::Body>,
     next: middleware::Next,
 ) -> response::Response {
-    let auth_cookie = match cookies.get(token::AUTH_TOKEN) {
-        Some(cookie) => cookie,
-        None => return auth_failed_response(),
-    };
-
-    let auth_token = match token::AuthToken::from_str(&auth_cookie.value().to_string()) {
+    let auth_token = match get_auth_token(cookies) {
         Some(token) => token,
         None => return auth_failed_response(),
     };
@@ -58,4 +53,16 @@ fn auth_failed_response() -> response::Response {
         "No authorization, try login again",
     )
         .into_response();
+}
+
+pub fn get_auth_token(cookies: tower_cookies::Cookies) -> Option<token::AuthToken> {
+    let auth_cookie = match cookies.get(token::AUTH_TOKEN) {
+        Some(cookie) => cookie,
+        None => return None,
+    };
+
+    match token::AuthToken::from_str(&auth_cookie.value().to_string()) {
+        Some(token) => Some(token),
+        None => None,
+    }
 }
