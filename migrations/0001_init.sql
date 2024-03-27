@@ -6,14 +6,14 @@ CREATE TABLE
     signature CHAR(20) NULL
   );
 
-CREATE TYPE REGION AS ENUM ('EUW', 'EUNE', 'NA', 'kr');
+CREATE TYPE REGION AS ENUM ('EUW', 'EUNE', 'NA', 'KR');
 
 CREATE TABLE
   account (
     id SERIAL PRIMARY KEY,
     in_game_name VARCHAR(16) NOT NULL,
     region REGION NOT NULL,
-    tag CHAR(4) NOT NULL
+    tag VARCHAR(4) NOT NULL
   );
 
 CREATE TABLE
