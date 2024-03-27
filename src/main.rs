@@ -1,4 +1,5 @@
 mod database;
+mod league_api;
 mod web;
 
 #[tokio::main]
