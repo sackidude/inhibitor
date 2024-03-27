@@ -1,5 +1,5 @@
 <p>This is your profile.</p>
-<form hx-post="/auth/accs">
+<form hx-post="/auth/accounts">
   Start tracking new league of legends account
   <label>
     username
@@ -15,7 +15,7 @@
   </label>
   <button type="submit">Submit</button>
 </form>
-<form hx-get="/auth/accs/games">
+<form hx-get="/auth/accounts/games">
   Fetch games for account
   <select name="account">
     {% for account in accounts %}
