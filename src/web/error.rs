@@ -2,6 +2,8 @@ pub type Result<T> = core::result::Result<T, Error>;
 #[derive(Debug, PartialEq)]
 pub enum Error {
     AskamaTemplateError,
+    FormDeserializingError,
+    DatabaseError,
 }
 
 impl std::fmt::Display for Error {
@@ -14,7 +16,10 @@ impl std::error::Error for Error {}
 
 impl From<askama::Error> for Error {
     fn from(err: askama::Error) -> Self {
-        println!("A askama templating error has occured: {}", err);
+        println!(
+            "web::error::Error.into_response with askama templating error: {}",
+            err
+        );
         Error::AskamaTemplateError
     }
 }
@@ -28,5 +33,22 @@ impl axum::response::IntoResponse for Error {
             "An unexpected internal error has occured.",
         )
             .into_response()
+    }
+}
+
+impl From<serde_urlencoded::de::Error> for Error {
+    fn from(err: serde_urlencoded::de::Error) -> Self {
+        println!(
+            "web::error::Error.into_response with serde_urlencoded deserializing error: {}",
+            err
+        );
+        Error::FormDeserializingError
+    }
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(err: sqlx::Error) -> Self {
+        println!("web::error::Error.into_response with sqlx error: {}", err);
+        Error::DatabaseError
     }
 }

@@ -1,7 +1,7 @@
 use askama::Template;
 use axum::{extract, response};
 
-use crate::web::middleware::token;
+use crate::web::{self, middleware::token};
 
 #[derive(askama::Template)]
 #[template(path = "logged_in.html")]
@@ -29,8 +29,8 @@ pub async fn post(
     cookies: tower_cookies::Cookies,
     extract::State(pool): extract::State<sqlx::Pool<sqlx::Postgres>>,
     req_body: String,
-) -> impl response::IntoResponse {
-    let payload: LoginPayload = serde_urlencoded::from_str(&req_body).unwrap();
+) -> web::error::Result<response::Html<String>> {
+    let payload: LoginPayload = serde_urlencoded::from_str(&req_body)?;
     println!("Login request from: {}", payload.username); // TEMP!
 
     let res = sqlx::query_as!(
@@ -39,8 +39,7 @@ pub async fn post(
         payload.username
     )
     .fetch_optional(&pool)
-    .await
-    .unwrap();
+    .await?;
 
     match res {
         Some(res) => {
@@ -58,8 +57,7 @@ pub async fn post(
                     res.id
                 )
                 .execute(&pool)
-                .await
-                .unwrap();
+                .await?;
 
                 // Create and set cookie
                 let mut auth_cookie =
@@ -81,9 +79,9 @@ pub async fn post(
     }
 }
 
-fn get_response(log_response: LoginResponse) -> impl response::IntoResponse {
+fn get_response(log_response: LoginResponse) -> web::error::Result<response::Html<String>> {
     let loggedin = LoggedInTemplate {
         login_state: log_response,
     };
-    response::Html(loggedin.render().unwrap())
+    Ok(response::Html(loggedin.render()?))
 }
