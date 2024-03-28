@@ -1,6 +1,8 @@
 use askama::{self, Template};
 use axum::{extract, response};
 
+use crate::web;
+
 #[derive(Debug)]
 struct Player {
     name: String,
@@ -24,7 +26,7 @@ struct GamesTemplate {
 
 pub async fn get(
     extract::State(pool): extract::State<sqlx::Pool<sqlx::Postgres>>,
-) -> impl response::IntoResponse {
+) -> web::error::Result<response::Html<String>> {
     let games_template = GamesTemplate {
         games: vec![Game {
             player: Player {
@@ -42,5 +44,5 @@ pub async fn get(
             win: true,
         }],
     };
-    response::Html(games_template.render().unwrap())
+    Ok(response::Html(games_template.render()?))
 }
