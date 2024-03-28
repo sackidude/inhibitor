@@ -1,10 +1,8 @@
-#[derive(Debug)]
-pub enum Error {
-    ParseError,
-    VerificationError,
-}
+use self::error::Error;
 
-#[derive(serde::Deserialize, Debug)]
+pub mod error;
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Region {
     Euw,
@@ -78,7 +76,10 @@ impl Account {
 
 #[tokio::test]
 async fn account_exist_test() {
-    let account = Account::from_form_res("username=oscargus&tag=poop&region=euw")
+    let account = Account::from_form_res("username=oscaRgus&tag=pOop&region=eUw")
         .await
         .unwrap();
+    assert_eq!(account.username, "oscargus");
+    assert_eq!(account.region, Region::Euw);
+    assert_eq!(account.tag, "poop");
 }
