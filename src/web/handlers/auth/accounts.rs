@@ -2,7 +2,10 @@ pub mod games;
 
 use axum::{extract, response};
 
-use crate::{api, web::middleware};
+use crate::{
+    api,
+    web::{self, middleware},
+};
 
 struct AccountId {
     id: i32,
@@ -12,15 +15,12 @@ pub async fn post(
     cookies: tower_cookies::Cookies,
     extract::State(pool): extract::State<sqlx::Pool<sqlx::Postgres>>,
     req_body: String,
-) -> impl response::IntoResponse {
+) -> web::error::Result<axum::http::StatusCode> {
     // Get account
-    let account = api::Account::from_form_res(&req_body).await.unwrap();
+    let account = api::Account::from_form_res(&req_body).await?;
 
     // Parse auth token to get user id
-    let token = match middleware::get_auth_token(cookies) {
-        Some(token) => token,
-        None => panic!("Request should have valid auth token after middleware"), // TODO FIX THIS
-    };
+    let token = middleware::get_auth_token(cookies).ok_or(()).expect("profile::get couldn't get auth token from response when middleware should garante there to be one");
 
     let user_id = token.get_user_id();
 
@@ -38,8 +38,7 @@ RETURNING id;"#,
         account.get_tag()
     )
     .fetch_one(&pool)
-    .await
-    .unwrap();
+    .await?;
 
     // Add entry to user_account
     sqlx::query!(
@@ -51,8 +50,7 @@ VALUES
         account_id.id
     )
     .execute(&pool)
-    .await
-    .unwrap();
+    .await?;
 
-    "added"
+    Ok(axum::http::StatusCode::CREATED)
 }

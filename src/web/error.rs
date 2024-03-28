@@ -1,9 +1,12 @@
+use crate::api;
+
 pub type Result<T> = core::result::Result<T, Error>;
 #[derive(Debug, PartialEq)]
 pub enum Error {
     AskamaTemplateError,
     FormDeserializingError,
     DatabaseError,
+    ApiError,
 }
 
 impl std::fmt::Display for Error {
@@ -50,5 +53,15 @@ impl From<sqlx::Error> for Error {
     fn from(err: sqlx::Error) -> Self {
         println!("web::error::Error.into_response with sqlx error: {}", err);
         Error::DatabaseError
+    }
+}
+
+impl From<api::error::Error> for Error {
+    fn from(err: api::error::Error) -> Self {
+        println!(
+            "web::error:Error.into_response with api error: {:?}, {}",
+            err, err
+        );
+        Error::ApiError
     }
 }
