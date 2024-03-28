@@ -8,9 +8,9 @@ VALUES
 INSERT INTO
     account (in_game_name, region, tag)
 VALUES
-    ('Chaoborus', 'euw', 'Spec'),
-    ('Hide on bush', 'kr', 'KR1'),
-    ('C9 Berserker', 'na', 'NA1');
+    ('chaoborus', 'euw', 'Spec'),
+    ('hide on bush', 'kr', 'kr1'),
+    ('c9 berserker', 'na', 'na1');
 
 INSERT INTO
     user_account (user_id, account_id)
