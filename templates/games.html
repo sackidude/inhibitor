@@ -1,0 +1,9 @@
+{% for game in games %}
+<p>
+  <b>{{ game.player.name }}</b> 
+  vs 
+  <b>{{ game.enemy.name }}</b>: 
+  {% if game.win%}Win{%else%}Loss{%endif%}
+  : {{ game.player.kills}}/{{game.player.deaths}}/{{ game.player.assits}}
+</p>
+{% endfor %}

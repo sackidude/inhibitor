@@ -1,3 +1,5 @@
+pub mod games;
+
 use axum::{extract, response};
 
 use crate::{api, web::middleware};
@@ -32,7 +34,7 @@ VALUES
     ($1, CAST ($2 AS REGION), $3) 
 RETURNING id;"#,
         account.get_username(),
-        account.get_region(),
+        Into::<&str>::into(account.get_region()),
         account.get_tag()
     )
     .fetch_one(&pool)

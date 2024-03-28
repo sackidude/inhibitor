@@ -6,7 +6,7 @@ CREATE TABLE
     signature CHAR(20) NULL
   );
 
-CREATE TYPE REGION AS ENUM ('EUW', 'EUNE', 'NA', 'KR');
+CREATE TYPE REGION AS ENUM ('euw', 'eune', 'na', 'kr');
 
 CREATE TABLE
   account (

@@ -4,20 +4,39 @@ pub enum Error {
     VerificationError,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum Region {
+    Euw,
+    Kr,
+    Na,
+    Eune,
+}
+
+#[derive(serde::Deserialize, Debug)]
 pub struct Account {
     username: String,
     tag: String,
-    region: String,
+    region: Region,
+}
+
+impl Into<&str> for &Region {
+    fn into(self) -> &'static str {
+        match self {
+            Region::Euw => "euw",
+            Region::Kr => "kr",
+            Region::Na => "na",
+            Region::Eune => "eune",
+        }
+    }
 }
 
 impl Account {
-    pub async fn from_form_res(urlencoded: &str) -> Result<Self, Error> {
+    pub async fn from_form_res(form_str: &str) -> Result<Self, Error> {
         // Parse the account
-        let mut account: Self =
-            serde_urlencoded::from_str(urlencoded).map_err(|_| Error::ParseError)?;
+        let low_case = form_str.to_ascii_lowercase();
+        let account: Self = serde_urlencoded::from_str(&low_case).map_err(|_| Error::ParseError)?;
 
-        account.region = account.region.trim().to_ascii_uppercase();
         // Verify that the account actually exists.
         if !account.exists().await {
             return Err(Error::VerificationError);
@@ -38,7 +57,7 @@ impl Account {
     pub fn get_url(&self) -> String {
         format!(
             "https://www.leagueofgraphs.com/summoner/{}/{}-{}",
-            self.region.to_ascii_lowercase(), // Really weird but ok.
+            Into::<&str>::into(&self.region), // Really weird but ok.
             self.username,
             self.tag
         )
@@ -48,11 +67,18 @@ impl Account {
         &self.username
     }
 
-    pub fn get_region(&self) -> &str {
+    pub fn get_region(&self) -> &Region {
         &self.region
     }
 
     pub fn get_tag(&self) -> &str {
         &self.tag
     }
+}
+
+#[tokio::test]
+async fn account_exist_test() {
+    let account = Account::from_form_res("username=oscargus&tag=poop&region=euw")
+        .await
+        .unwrap();
 }
