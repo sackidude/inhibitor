@@ -2,7 +2,7 @@ use askama::Template;
 use axum::{extract, response};
 use sqlx::prelude::FromRow;
 
-use crate::web::middleware;
+use crate::web::{self, middleware};
 
 #[derive(FromRow)]
 struct Account {
@@ -19,12 +19,9 @@ struct ProfileTemplate {
 pub async fn get(
     extract::State(pool): extract::State<sqlx::Pool<sqlx::Postgres>>,
     cookies: tower_cookies::Cookies,
-) -> impl response::IntoResponse {
+) -> web::error::Result<response::Html<String>> {
     // parse token
-    let token = match middleware::get_auth_token(cookies) {
-        Some(token) => token,
-        None => panic!("Request should have valid auth token after middleware"), // TODO FIX THIS
-    };
+    let token = middleware::get_auth_token(cookies).ok_or(()).expect("profile::get couldn't get auth token from response when middleware should garante there to be one");
 
     let user_id = token.get_user_id();
 
@@ -42,9 +39,8 @@ pub async fn get(
         user_id
     )
     .fetch_all(&pool)
-    .await
-    .unwrap();
+    .await?;
 
     let profile = ProfileTemplate { accounts };
-    response::Html(profile.render().unwrap())
+    Ok(response::Html(profile.render()?))
 }
