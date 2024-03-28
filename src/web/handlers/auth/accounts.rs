@@ -1,6 +1,6 @@
 pub mod games;
 
-use axum::{extract, response};
+use axum::extract;
 
 use crate::{
     api,
