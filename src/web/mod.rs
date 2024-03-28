@@ -1,6 +1,7 @@
 use axum::routing;
 use handlers::{auth, public};
 
+mod error;
 mod handlers;
 mod middleware;
 
