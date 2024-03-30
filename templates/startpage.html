@@ -14,16 +14,63 @@
     <title>Uninhibited</title>
   </head>
   <body>
-    <form hx-post="/public/login" hx-target="body">
-      <label>
-        username
-        <input type="text" name="username" required /><br />
-      </label>
-      <label>
-        password
-        <input type="password" name="password" required /><br />
-      </label>
-      <button type="submit">Submit</button>
-    </form>
+    <header>
+      <div class="logo">
+        <img src="images/logo.svg" alt="book logo" />
+        <h1>League Journal</h1>
+      </div>
+      <button>Sign In</button>
+    </header>
+    <main>
+      <article class="intro">
+        <h1>Real and fast improvement</h1>
+        <p>
+          What's been tried and tested for learning is repetition and self
+          evaluation. League journal simplifies the process of note taking and
+          self evaluation in terms of league of legends.
+        </p>
+        <img
+          src="images/lunnefågel.jpg"
+          alt="Faker studying a book, improving on league"
+        />
+        <div class="links">
+          <button>Sign up now</button>
+          <br />
+          <a href="">Already a member? Login in.</a>
+        </div>
+      </article>
+      <article class="features">
+        <h1>Fetch your games in milliseconds</h1>
+        <img
+          src="images/overview-img.png"
+          alt="Images showing the service in use"
+        />
+        <p>
+          Get your last 3, 4, 5 or even 10 last games and start taking notes
+          today.
+        </p>
+        <ul>
+          <li>
+            Keep track of multiple accounts, even if they aren't <i>yours</i>.
+            Maybe fakers?
+          </li>
+          <li>
+            Can be reviewed later on. Streamlining the improvement process.
+          </li>
+          <li>
+            Store metadata about the game, your teammates and your opponents for
+            you own memory and note taking.
+          </li>
+        </ul>
+      </article>
+    </main>
+    <footer>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Support</a></li>
+        <li><a href="#">Features</a></li>
+      </ul>
+      <p class="copyright">© 2024 Privacy — Terms</p>
+    </footer>
   </body>
 </html>

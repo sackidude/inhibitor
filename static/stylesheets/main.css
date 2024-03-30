@@ -1,3 +1,4 @@
+/* Reset */
 *,
 *::after,
 *::before {
@@ -7,4 +8,159 @@
 * {
   margin: 0;
   padding: 0;
+}
+
+body {
+  line-height: 1.5;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+:root {
+  --bg-400: #1c274d;
+  --bg-100: #0d111f;
+  --color-700: #ffffff;
+}
+
+html {
+  background-color: var(--bg-100);
+  color: var(--color-700);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color-scheme: dark;
+}
+
+header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 1rem;
+}
+
+header .logo {
+  display: flex;
+  gap: 1rem;
+}
+
+header h1 {
+  display: none;
+}
+
+@media screen and (min-width: 650px) {
+  header h1 {
+    display: inline;
+  }
+}
+
+.logo {
+  max-height: 3rem;
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+}
+
+header button {
+  justify-self: right;
+  padding-inline: calc(min(max(2rem, 10vw), 7rem));
+}
+
+main {
+  padding: calc(max(0.5rem, 5vw));
+  display: grid;
+  gap: calc(max(5rem, 10vw));
+}
+
+.intro img {
+  border-radius: 1rem;
+}
+
+article {
+  display: grid;
+  gap: calc(max(0.5rem, 1.5vw));
+  column-gap: 5vw;
+}
+
+.links > button {
+  padding-block: 1rem;
+  margin-bottom: 1rem;
+}
+
+.links > * {
+  width: calc(100% - 2rem);
+}
+
+@media screen and (min-width: 650px) {
+  article {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  article img {
+    grid-column: 2 / -1;
+    grid-row: 1 / 4;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  article {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.intro h1 {
+  font-size: 3rem;
+}
+
+.features h1 {
+  font-size: 1.5rem;
+}
+
+ul {
+  padding-left: 3rem;
+}
+
+footer {
+  margin-top: 5rem;
+  padding: 1rem;
+}
+
+footer ul {
+  list-style-type: none;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-items: auto;
+}
+
+footer ul li {
+  text-align: center;
+}
+
+.copyright {
+  margin-top: 1rem;
+  text-align: right;
 }
